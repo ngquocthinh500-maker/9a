@@ -1,0 +1,1651 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyForum · Diễn Đàn & Kỷ Niệm Lớp Chúng Mình</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'sans-serif'],
+          },
+          colors: {
+            sky: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background: linear-gradient(180deg, #DBF0FE 0%, #F0F9FF 40%, #F8FAFC 100%);
+      background-attachment: fixed;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .dark body {
+      background: linear-gradient(180deg, #0F172A 0%, #1E293B 50%, #0F172A 100%);
+    }
+    /* Custom Glassmorphism */
+    .glass-card {
+      background: rgba(255, 255, 255, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .dark .glass-card {
+      background: rgba(30, 41, 59, 0.85);
+    }
+    /* Hide scrollbar for horizontal pills */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    /* Animations */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-6px) rotate(3deg); }
+    }
+    @keyframes popScale {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.32); }
+      100% { transform: scale(1); }
+    }
+    .animate-float {
+      animation: floatSlow 4s ease-in-out infinite;
+    }
+    .animate-pop {
+      animation: popScale 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.28s ease-out;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen text-slate-800 dark:text-slate-100 pb-24 lg:pb-12 transition-colors duration-300">
+
+  <!-- TOAST NOTIFICATION CONTAINER -->
+  <div id="toastContainer" class="fixed top-20 right-4 z-[100] flex flex-col gap-2 max-w-xs w-full pointer-events-none"></div>
+
+  <!-- STICKY HEADER -->
+  <header class="glass-card sticky top-0 z-40 border-b border-sky-200/80 dark:border-slate-700/80 shadow-sm">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-3">
+      
+      <!-- Brand Logo (Inspired by Reference Image) -->
+      <div onclick="switchTab('feed')" class="flex items-center gap-3 cursor-pointer group">
+        <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-sky-500 to-sky-600 flex items-center justify-center text-white shadow-md shadow-sky-300/50 dark:shadow-none group-hover:scale-105 transition">
+          <i class="fa-solid fa-graduation-cap text-xl"></i>
+        </div>
+        <div>
+          <div class="flex items-center gap-1.5">
+            <h1 class="font-extrabold text-slate-800 dark:text-white text-lg leading-tight tracking-tight">SkyForum 12A1</h1>
+            <span class="bg-sky-100 dark:bg-sky-900/60 text-sky-600 dark:text-sky-300 text-[10px] font-extrabold px-2 py-0.5 rounded-full">PRO</span>
+          </div>
+          <p class="text-[11px] font-semibold text-sky-600 dark:text-sky-400 tracking-widest uppercase">Education & Memories</p>
+        </div>
+      </div>
+
+      <!-- Desktop Search Bar -->
+      <div class="hidden md:flex items-center flex-1 max-w-md mx-4 relative">
+        <i class="fa-solid fa-magnifying-glass text-slate-400 absolute left-4 text-sm"></i>
+        <input id="globalSearchInput" oninput="handleSearch(this.value)" type="text" placeholder="Tìm bài viết, tài liệu, kỷ niệm lớp..." class="w-full pl-10 pr-4 py-2.5 rounded-full bg-sky-50/90 dark:bg-slate-800 border border-sky-200 dark:border-slate-700 text-sm focus:outline-none focus:border-sky-500 focus:ring-2 focus:ring-sky-200 dark:focus:ring-sky-800 transition">
+      </div>
+
+      <!-- Right Action Buttons -->
+      <div class="flex items-center gap-2">
+        <!-- Theme Toggle -->
+        <button onclick="toggleDarkMode()" title="Đổi giao diện Sáng/Tối" class="w-10 h-10 rounded-2xl border border-sky-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-sky-300 hover:bg-sky-50 transition">
+          <i id="themeIcon" class="fa-solid fa-moon"></i>
+        </button>
+
+        <!-- Notification Bell -->
+        <button onclick="openModal('notifModal')" class="relative w-10 h-10 rounded-2xl border border-sky-200 dark:border-slate-700 bg-white/80 dark:bg-slate-800 flex items-center justify-center text-slate-600 dark:text-slate-200 hover:bg-sky-50 transition">
+          <i class="fa-regular fa-bell"></i>
+          <span id="notifBadge" class="w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center absolute -top-1 -right-1 animate-pulse">3</span>
+        </button>
+
+        <!-- Current User Profile Pill -->
+        <button onclick="openModal('authModal')" class="flex items-center gap-2 pl-1.5 pr-3 py-1.5 rounded-full border border-sky-200 dark:border-slate-700 bg-white/90 dark:bg-slate-800 hover:border-sky-400 transition shadow-sm">
+          <img id="headerUserAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" alt="Avatar" class="w-7 h-7 rounded-full object-cover ring-2 ring-sky-400">
+          <div class="text-left hidden sm:block">
+            <p id="headerUserName" class="text-xs font-bold leading-none text-slate-800 dark:text-white">Minh Anh</p>
+            <p id="headerUserRole" class="text-[10px] font-semibold text-sky-600 dark:text-sky-400 leading-none mt-0.5">Admin · Lớp trưởng</p>
+          </div>
+          <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-0.5"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Pinned Class Broadcast Banner -->
+    <div id="broadcastBar" class="bg-gradient-to-r from-sky-500 via-sky-600 to-blue-600 text-white px-4 py-1.5 text-xs font-medium">
+      <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+        <div class="flex items-center gap-2 truncate">
+          <span class="bg-white/20 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0">
+            <i class="fa-solid fa-bullhorn mr-1"></i>Thông báo
+          </span>
+          <span id="broadcastText" class="truncate">Chủ nhật tuần này (8h00) cả lớp tập trung chụp ảnh kỷ yếu tại sân trường nhé! Nhớ mang đồng phục trắng.</span>
+        </div>
+        <button onclick="switchTab('admin')" class="text-[11px] underline font-semibold shrink-0 hidden sm:inline hover:text-sky-100">Sửa thông báo</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN LAYOUT CONTAINER -->
+  <div class="max-w-6xl mx-auto px-4 pt-5 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT SIDEBAR (Desktop Navigation + Quick Profile) -->
+    <aside class="hidden lg:block lg:col-span-3 space-y-5">
+      <!-- User Role Card -->
+      <div class="glass-card rounded-3xl p-5 border border-white dark:border-slate-700/80 shadow-sm">
+        <div class="flex items-center gap-3">
+          <img id="sidebarAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="w-14 h-14 rounded-2xl object-cover ring-2 ring-sky-400 shadow" alt="User">
+          <div>
+            <span id="sidebarRoleBadge" class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-sky-100 text-sky-700 dark:bg-sky-900/70 dark:text-sky-300">
+              <i class="fa-solid fa-crown text-amber-500"></i> Lớp Trưởng (Admin)
+            </span>
+            <h3 id="sidebarName" class="font-extrabold text-base text-slate-800 dark:text-white mt-1">Nguyễn Minh Anh</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400">Điểm sôi nổi: <strong id="userPoints" class="text-sky-600 dark:text-sky-400">1,450 XP</strong></p>
+          </div>
+        </div>
+
+        <!-- Quick Role Switcher for Testing -->
+        <div class="mt-4 pt-3 border-t border-sky-100 dark:border-slate-700">
+          <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">Đổi nhanh quyền hạn (Demo):</p>
+          <div class="grid grid-cols-2 gap-1.5">
+            <button onclick="switchRole('admin')" id="roleBtnAdmin" class="py-1.5 px-2 rounded-xl text-xs font-bold bg-sky-500 text-white shadow-sm transition">
+              <i class="fa-solid fa-shield-halved mr-1"></i>Admin
+            </button>
+            <button onclick="switchRole('member')" id="roleBtnMember" class="py-1.5 px-2 rounded-xl text-xs font-bold bg-sky-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-sky-100 transition">
+              <i class="fa-solid fa-user mr-1"></i>Thành viên
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Desktop Menu Links -->
+      <nav class="glass-card rounded-3xl p-3 border border-white dark:border-slate-700/80 shadow-sm space-y-1">
+        <button onclick="switchTab('feed')" data-tab="feed" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm bg-sky-500 text-white shadow-md shadow-sky-200 dark:shadow-none transition">
+          <span class="flex items-center gap-3"><i class="fa-solid fa-house-chimney w-5"></i> Trang chủ & Diễn đàn</span>
+          <span class="text-xs bg-white/20 px-2 py-0.5 rounded-full" id="navFeedCount">6</span>
+        </button>
+        <button onclick="switchTab('memories')" data-tab="memories" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800 transition">
+          <span class="flex items-center gap-3"><i class="fa-solid fa-camera-retro w-5 text-sky-500"></i> Kho Ảnh & Lưu Bút</span>
+          <span class="text-xs bg-sky-100 dark:bg-slate-700 text-sky-700 dark:text-sky-300 px-2 py-0.5 rounded-full">Hot</span>
+        </button>
+        <button onclick="switchTab('study')" data-tab="study" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800 transition">
+          <span class="flex items-center gap-3"><i class="fa-solid fa-book-open-reader w-5 text-emerald-500"></i> Góc Học Tập & Pomodoro</span>
+        </button>
+        <button onclick="switchTab('leaderboard')" data-tab="leaderboard" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800 transition">
+          <span class="flex items-center gap-3"><i class="fa-solid fa-trophy w-5 text-amber-500"></i> Bảng Phong Thần</span>
+        </button>
+        <button onclick="switchTab('admin')" data-tab="admin" class="nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800 transition">
+          <span class="flex items-center gap-3"><i class="fa-solid fa-sliders w-5 text-rose-500"></i> Quản Trị Lớp (Admin)</span>
+          <span id="pendingCountBadge" class="text-xs bg-rose-500 text-white px-2 py-0.5 rounded-full">2</span>
+        </button>
+      </nav>
+
+      <!-- Upcoming Exam Countdown Mini Card -->
+      <div class="glass-card rounded-3xl p-5 border border-white dark:border-slate-700/80 shadow-sm relative overflow-hidden">
+        <div class="absolute -right-4 -bottom-4 text-sky-100 dark:text-slate-800 text-7xl pointer-events-none">
+          <i class="fa-solid fa-hourglass-half"></i>
+        </div>
+        <span class="text-[11px] font-extrabold uppercase tracking-wider text-sky-600 dark:text-sky-400">Đếm ngược sự kiện</span>
+        <h4 class="font-extrabold text-slate-800 dark:text-white mt-0.5">Kỳ Thi Học Kỳ & Kỷ Yếu</h4>
+        <div class="grid grid-cols-3 gap-2 mt-3 text-center relative z-10">
+          <div class="bg-sky-50 dark:bg-slate-800 p-2 rounded-2xl border border-sky-100 dark:border-slate-700">
+            <p class="text-xl font-extrabold text-sky-600 dark:text-sky-400">14</p>
+            <p class="text-[10px] font-semibold text-slate-500">Ngày</p>
+          </div>
+          <div class="bg-sky-50 dark:bg-slate-800 p-2 rounded-2xl border border-sky-100 dark:border-slate-700">
+            <p class="text-xl font-extrabold text-sky-600 dark:text-sky-400">08</p>
+            <p class="text-[10px] font-semibold text-slate-500">Giờ</p>
+          </div>
+          <div class="bg-sky-50 dark:bg-slate-800 p-2 rounded-2xl border border-sky-100 dark:border-slate-700">
+            <p class="text-xl font-extrabold text-sky-600 dark:text-sky-400">45</p>
+            <p class="text-[10px] font-semibold text-slate-500">Phút</p>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CENTER / MAIN CONTENT AREA -->
+    <main class="lg:col-span-9 space-y-6">
+
+      <!-- ==========================================
+           TAB 1: TRANG CHỦ & DIỄN ĐÀN (HERO + FEED)
+           ========================================== -->
+      <section id="tab-feed" class="tab-content active space-y-6">
+
+        <!-- HERO WELCOME CARD (Matches Screenshot Layout & Aesthetic in Sky Blue) -->
+        <div id="heroBanner" class="glass-card rounded-3xl p-6 sm:p-8 border border-white dark:border-slate-700 shadow-sm relative overflow-hidden">
+          <!-- Decorative floating elements -->
+          <div class="absolute top-6 right-8 text-amber-400 text-3xl animate-float hidden sm:block">
+            <i class="fa-regular fa-lightbulb"></i>
+          </div>
+          <div class="absolute top-16 right-1/3 text-sky-300/70 text-xl rotate-12 pointer-events-none">
+            <i class="fa-regular fa-paper-plane"></i>
+          </div>
+
+          <!-- Top Pill Badge -->
+          <div class="inline-flex items-center gap-2.5 bg-sky-50/90 dark:bg-slate-800 border border-sky-200 dark:border-slate-600 px-4 py-2 rounded-2xl shadow-sm mb-5">
+            <i class="fa-regular fa-paper-plane text-sky-500 text-sm"></i>
+            <span class="text-xs font-extrabold text-sky-700 dark:text-sky-300 tracking-wide uppercase">
+              SKYFORUM EDUCATION · ĐỒNG HÀNH CÙNG LỚP MÌNH
+            </span>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div class="md:col-span-7">
+              <!-- Main Headline -->
+              <h2 class="text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-white leading-tight">
+                Học vững hôm nay<br>
+                <span class="text-amber-500">Lưu giữ thanh xuân!</span>
+              </h2>
+
+              <!-- Description paragraph -->
+              <p class="text-slate-600 dark:text-slate-300 text-[15px] leading-relaxed mt-3.5">
+                Mỗi thành viên là một mảnh ghép riêng biệt. Chúng mình cùng nhau chia sẻ bài vở, lưu trữ kho ảnh kỷ niệm, gửi confession ẩn danh và viết nên những năm tháng rực rỡ nhất.
+              </p>
+
+              <!-- Pill Buttons (Like Reference Screenshot) -->
+              <div class="mt-6 space-y-3 sm:space-y-0 sm:flex sm:gap-3">
+                <button onclick="openModal('createPostModal')" class="w-full sm:w-auto px-7 py-4 rounded-full bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 active:scale-[0.99] text-white font-bold text-[15px] shadow-lg shadow-sky-200 dark:shadow-none flex items-center justify-center gap-2.5 transition">
+                  <i class="fa-solid fa-play text-xs"></i> Đăng bài / Confession
+                </button>
+                <button onclick="switchTab('memories')" class="w-full sm:w-auto px-7 py-4 rounded-full bg-white dark:bg-slate-800 hover:bg-sky-50 dark:hover:bg-slate-700 text-sky-700 dark:text-sky-300 font-bold text-[15px] border-2 border-sky-300 dark:border-slate-600 flex items-center justify-center gap-2.5 transition">
+                  <i class="fa-regular fa-images"></i> Xem kho ảnh tại lớp
+                </button>
+              </div>
+
+              <!-- 3 Feature Checkmarks -->
+              <div class="mt-6 flex flex-wrap gap-x-5 gap-y-2 text-sm font-bold text-slate-700 dark:text-slate-300">
+                <div class="flex items-center gap-1.5">
+                  <i class="fa-regular fa-face-smile text-sky-500"></i> Chia sẻ dễ dàng
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-book-open text-sky-500"></i> Kho tài liệu chung
+                </div>
+                <div class="flex items-center gap-1.5">
+                  <i class="fa-solid fa-wand-magic-sparkles text-sky-500"></i> Gắn kết mỗi ngày
+                </div>
+              </div>
+            </div>
+
+            <!-- Featured Class Card Preview (Matches Bottom Card in Screenshot) -->
+            <div class="md:col-span-5">
+              <div class="relative rounded-3xl overflow-hidden shadow-lg border-4 border-white dark:border-slate-700 group">
+                <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80" alt="Lớp học" class="w-full h-56 sm:h-64 object-cover group-hover:scale-105 transition duration-500">
+                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
+                
+                <!-- Bottom-left badge -->
+                <div class="absolute bottom-3.5 left-3.5 bg-white/95 dark:bg-slate-900/95 backdrop-blur px-4 py-2.5 rounded-2xl shadow-md flex items-center gap-2.5">
+                  <i class="fa-regular fa-heart text-rose-500 text-lg"></i>
+                  <div>
+                    <p class="text-[11px] font-bold text-slate-500 dark:text-slate-400 leading-tight">Góc kỷ niệm</p>
+                    <p class="text-sm font-extrabold text-slate-800 dark:text-white leading-tight">Tập thể 12A1</p>
+                  </div>
+                </div>
+
+                <!-- Bottom-right pill action -->
+                <button onclick="switchTab('memories'); openModal('NoteModal')" class="absolute bottom-3.5 right-3.5 bg-sky-600 hover:bg-sky-500 text-white px-4 py-2.5 rounded-full font-bold text-xs sm:text-sm shadow-lg flex items-center gap-2 transition">
+                  <i class="fa-solid fa-pen-nib"></i> Viết lưu bút
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK STATS BAR -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="glass-card p-4 rounded-3xl border border-white dark:border-slate-700 flex items-center gap-3 shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-sky-100 dark:bg-sky-900/50 text-sky-600 dark:text-sky-300 flex items-center justify-center text-lg font-bold">
+              <i class="fa-solid fa-users"></i>
+            </div>
+            <div>
+              <p class="text-xl font-extrabold text-slate-800 dark:text-white">45</p>
+              <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Thành viên lớp</p>
+            </div>
+          </div>
+          <div class="glass-card p-4 rounded-3xl border border-white dark:border-slate-700 flex items-center gap-3 shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-amber-100 dark:bg-amber-900/50 text-amber-600 dark:text-amber-300 flex items-center justify-center text-lg font-bold">
+              <i class="fa-solid fa-comments"></i>
+            </div>
+            <div>
+              <p id="statTotalPosts" class="text-xl font-extrabold text-slate-800 dark:text-white">6</p>
+              <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Bài thảo luận</p>
+            </div>
+          </div>
+          <div class="glass-card p-4 rounded-3xl border border-white dark:border-slate-700 flex items-center gap-3 shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-rose-100 dark:bg-rose-900/50 text-rose-600 dark:text-rose-300 flex items-center justify-center text-lg font-bold">
+              <i class="fa-solid fa-images"></i>
+            </div>
+            <div>
+              <p id="statTotalPhotos" class="text-xl font-extrabold text-slate-800 dark:text-white">8</p>
+              <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Ảnh kỷ niệm</p>
+            </div>
+          </div>
+          <div class="glass-card p-4 rounded-3xl border border-white dark:border-slate-700 flex items-center gap-3 shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-emerald-100 dark:bg-emerald-900/50 text-emerald-600 dark:text-emerald-300 flex items-center justify-center text-lg font-bold">
+              <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <div>
+              <p id="statTotalDocs" class="text-xl font-extrabold text-slate-800 dark:text-white">5</p>
+              <p class="text-xs font-medium text-slate-500 dark:text-slate-400">Đề cương ôn thi</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- QUICK POST COMPOSER BAR -->
+        <div class="glass-card p-4 rounded-3xl border border-white dark:border-slate-700 shadow-sm flex items-center gap-3">
+          <img id="composerAvatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="w-11 h-11 rounded-full object-cover ring-2 ring-sky-300" alt="Avatar">
+          <button onclick="openModal('createPostModal')" class="flex-1 text-left px-4 py-3 rounded-full bg-sky-50/90 dark:bg-slate-800 hover:bg-sky-100/80 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 text-sm font-medium border border-sky-200/80 dark:border-slate-600 transition">
+            Bạn đang nghĩ gì thế? Chia sẻ kỷ niệm hoặc gửi Confession ẩn danh...
+          </button>
+          <button onclick="openModal('createPostModal')" class="w-11 h-11 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center shadow-md shadow-sky-200 dark:shadow-none shrink-0">
+            <i class="fa-solid fa-plus"></i>
+          </button>
+        </div>
+
+        <!-- CATEGORY FILTER PILLS -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-1">
+          <button onclick="filterPosts('all')" data-cat="all" class="cat-pill shrink-0 px-4 py-2 rounded-full text-xs font-bold bg-sky-500 text-white shadow-sm transition">
+            <i class="fa-solid fa-layer-group mr-1"></i> Tất cả bài viết
+          </button>
+          <button onclick="filterPosts('Thông báo')" data-cat="Thông báo" class="cat-pill shrink-0 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-sky-200 dark:border-slate-700 hover:border-sky-400 transition">
+            📢 Thông báo lớp
+          </button>
+          <button onclick="filterPosts('Confession')" data-cat="Confession" class="cat-pill shrink-0 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-sky-200 dark:border-slate-700 hover:border-sky-400 transition">
+            🎭 Confession ẩn danh
+          </button>
+          <button onclick="filterPosts('Dìm hàng & Giải trí')" data-cat="Dìm hàng & Giải trí" class="cat-pill shrink-0 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-sky-200 dark:border-slate-700 hover:border-sky-400 transition">
+            😂 Dìm hàng & Giải trí
+          </button>
+          <button onclick="filterPosts('Học tập')" data-cat="Học tập" class="cat-pill shrink-0 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-sky-200 dark:border-slate-700 hover:border-sky-400 transition">
+            📚 Góc học tập
+          </button>
+        </div>
+
+        <!-- FORUM POSTS CONTAINER -->
+        <div id="postsFeedContainer" class="space-y-4">
+          <!-- Rendered dynamically by JS -->
+        </div>
+
+      </section>
+
+      <!-- ==========================================
+           TAB 2: KHO ẢNH KỶ NIỆM & LƯU BÚT THANH XUÂN
+           ========================================== -->
+      <section id="tab-memories" class="tab-content space-y-6">
+        <!-- Header Banner -->
+        <div class="glass-card rounded-3xl p-6 border border-white dark:border-slate-700 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider text-sky-600 dark:text-sky-400">Class Yearbook & Gallery</span>
+            <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white mt-0.5">Kho Kỷ Niệm & Lưu Bút</h2>
+            <p class="text-sm text-slate-500 dark:text-slate-400">Nơi cất giữ những khoảnh khắc dìm hàng, dã ngoại và lời nhắn gửi cho nhau.</p>
+          </div>
+          <div class="flex gap-2">
+            <button onclick="openModal('uploadPhotoModal')" class="px-4 py-2.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs sm:text-sm shadow-md flex items-center gap-2">
+              <i class="fa-solid fa-cloud-arrow-up"></i> Tải ảnh lên
+            </button>
+            <button onclick="openModal('NoteModal')" class="px-4 py-2.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs sm:text-sm shadow-md flex items-center gap-2">
+              <i class="fa-solid fa-note-sticky"></i> Dán lưu bút
+            </button>
+          </div>
+        </div>
+
+        <!-- Album Filter Pills -->
+        <div class="flex items-center gap-2 overflow-x-auto no-scrollbar">
+          <button onclick="filterPhotos('all')" class="photo-pill px-4 py-2 rounded-full text-xs font-bold bg-sky-500 text-white">Tất cả ảnh</button>
+          <button onclick="filterPhotos('Kỷ yếu')" class="photo-pill px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-sky-200 dark:border-slate-700">🎓 Kỷ yếu</button>
+          <button onclick="filterPhotos('Dã ngoại')" class="photo-pill px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-sky-200 dark:border-slate-700">🏕️ Dã ngoại</button>
+          <button onclick="filterPhotos('Dìm hàng')" class="photo-pill px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-sky-200 dark:border-slate-700">🤪 Dìm hàng</button>
+        </div>
+
+        <!-- Photo Grid -->
+        <div id="photoGalleryGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          <!-- Rendered by JS -->
+        </div>
+
+        <!-- LƯU BÚT THANH XUÂN (Digital Sticky Notes Wall) -->
+        <div class="pt-4">
+          <div class="flex items-center justify-between mb-4">
+            <div>
+              <h3 class="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
+                <i class="fa-solid fa-heart-pulse text-rose-500"></i> Bức Tường Lưu Bút Thanh Xuân
+              </h3>
+              <p class="text-xs text-slate-500 dark:text-slate-400">Những lời chúc, lời nhắn nhủ viết vội gửi tập thể lớp mình</p>
+            </div>
+          </div>
+
+          <div id="stickyNotesGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 3: GÓC HỌC TẬP & ĐỒNG HỒ POMODORO
+           ========================================== -->
+      <section id="tab-study" class="tab-content space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-6">
+          
+          <!-- Pomodoro Timer Widget -->
+          <div class="md:col-span-5 glass-card rounded-3xl p-6 border border-white dark:border-slate-700 shadow-sm text-center flex flex-col justify-between">
+            <div>
+              <span class="px-3 py-1 rounded-full text-xs font-bold bg-sky-100 dark:bg-sky-900/60 text-sky-700 dark:text-sky-300">
+                <i class="fa-solid fa-clock mr-1"></i> Pomodoro Học Nhóm
+              </span>
+              <h3 class="text-lg font-extrabold text-slate-800 dark:text-white mt-3">Đồng Hồ Tập Trung</h3>
+              <p id="pomoStatusText" class="text-xs text-slate-500 dark:text-slate-400">25 phút tập trung cao độ · 5 phút nghỉ ngơi</p>
+
+              <!-- Timer Display -->
+              <div class="my-6 py-6 rounded-3xl bg-gradient-to-b from-sky-50 to-white dark:from-slate-800 dark:to-slate-900 border border-sky-200 dark:border-slate-700 shadow-inner">
+                <span id="pomoTimeDisplay" class="text-5xl font-extrabold tracking-wider text-sky-600 dark:text-sky-400 font-mono">25:00</span>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <div class="flex gap-2 justify-center">
+                <button onclick="togglePomodoro()" id="pomoStartBtn" class="flex-1 py-3 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-md transition">
+                  <i class="fa-solid fa-play mr-1"></i> Bắt đầu học
+                </button>
+                <button onclick="resetPomodoro()" class="px-4 py-3 rounded-full bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 text-slate-700 dark:text-slate-200 font-bold text-sm transition">
+                  <i class="fa-solid fa-rotate-right"></i>
+                </button>
+              </div>
+              <div class="flex justify-center gap-2 pt-2">
+                <button onclick="setPomoMode(25, 'Phiên tập trung 25 phút')" class="text-xs font-bold px-3 py-1 rounded-xl bg-sky-100 dark:bg-slate-800 text-sky-700 dark:text-sky-300">25p Học</button>
+                <button onclick="setPomoMode(5, 'Giải lao ngắn 5 phút')" class="text-xs font-bold px-3 py-1 rounded-xl bg-emerald-100 dark:bg-slate-800 text-emerald-700 dark:text-emerald-300">5p Nghỉ</button>
+                <button onclick="setPomoMode(45, 'Luyện đề 45 phút')" class="text-xs font-bold px-3 py-1 rounded-xl bg-amber-100 dark:bg-slate-800 text-amber-700 dark:text-amber-300">45p Luyện đề</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Shared Study Documents Repository -->
+          <div class="md:col-span-7 glass-card rounded-3xl p-6 border border-white dark:border-slate-700 shadow-sm">
+            <div class="flex items-center justify-between mb-4">
+              <div>
+                <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">Kho Tài Liệu & Đề Cương</h3>
+                <p class="text-xs text-slate-500 dark:text-slate-400">Tổng hợp sơ đồ tư duy, đề thi thử các môn</p>
+              </div>
+              <button onclick="openModal('addDocModal')" class="px-3.5 py-2 rounded-full bg-sky-500 hover:bg-sky-600 text-white text-xs font-bold shadow flex items-center gap-1.5">
+                <i class="fa-solid fa-plus"></i> Đóng góp tài liệu
+              </button>
+            </div>
+
+            <div id="studyDocsList" class="space-y-3">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 4: BẢNG PHONG THẦN (LEADERBOARD)
+           ========================================== -->
+      <section id="tab-leaderboard" class="tab-content space-y-6">
+        <div class="glass-card rounded-3xl p-6 border border-white dark:border-slate-700 shadow-sm">
+          <div class="text-center max-w-lg mx-auto mb-6">
+            <span class="px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-700">
+              <i class="fa-solid fa-crown mr-1"></i> Hall of Fame 12A1
+            </span>
+            <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white mt-2">Bảng Phong Thần Lớp Mình</h2>
+            <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1">Xếp hạng các thành viên năng nổ đăng bài, chia sẻ tài liệu và tương tác nhiều nhất trong tháng.</p>
+          </div>
+
+          <div id="leaderboardContainer" class="space-y-3 max-w-2xl mx-auto">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+      </section>
+
+      <!-- ==========================================
+           TAB 5: QUẢN TRỊ VIÊN (ADMIN DASHBOARD)
+           ========================================== -->
+      <section id="tab-admin" class="tab-content space-y-6">
+        <!-- Admin Access Guard Notice -->
+        <div id="adminLockNotice" class="hidden glass-card rounded-3xl p-8 border border-rose-200 text-center space-y-4">
+          <div class="w-16 h-16 rounded-3xl bg-rose-100 text-rose-500 flex items-center justify-center text-3xl mx-auto">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <h3 class="text-xl font-extrabold text-slate-800 dark:text-white">Khu vực dành riêng cho Ban Cán Sự / Admin</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto">
+            Bạn đang ở chế độ <strong>Thành viên thường</strong>. Hãy bấm nút chuyển sang quyền <strong>Admin (Lớp trưởng)</strong> bên dưới để mở khóa toàn bộ tính năng quản trị!
+          </p>
+          <button onclick="switchRole('admin')" class="px-6 py-3 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-lg">
+            <i class="fa-solid fa-wand-magic-sparkles mr-1.5"></i> Chuyển sang quyền Admin ngay
+          </button>
+        </div>
+
+        <!-- Actual Admin Panel Content -->
+        <div id="adminDashboardContent" class="space-y-6">
+          <div class="glass-card rounded-3xl p-6 border border-sky-200 dark:border-slate-700 shadow-sm">
+            <div class="flex flex-wrap items-center justify-between gap-4 border-b border-sky-100 dark:border-slate-700 pb-4">
+              <div>
+                <span class="text-xs font-extrabold uppercase tracking-wider text-sky-600 dark:text-sky-400">
+                  <i class="fa-solid fa-shield-halved mr-1"></i> Admin Control Center
+                </span>
+                <h2 class="text-2xl font-extrabold text-slate-800 dark:text-white">Bảng Điều Khiển Quản Trị Lớp</h2>
+              </div>
+              <span class="px-3.5 py-1.5 rounded-full text-xs font-bold bg-emerald-100 text-emerald-700 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span> Quyền Admin đang bật
+              </span>
+            </div>
+
+            <!-- Broadcast Banner Updater -->
+            <div class="mt-5">
+              <label class="block text-xs font-bold uppercase text-slate-500 dark:text-slate-400 mb-2">
+                📢 Cập nhật dòng thông báo chạy trên đầu trang
+              </label>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <input id="adminBroadcastInput" type="text" value="Chủ nhật tuần này (8h00) cả lớp tập trung chụp ảnh kỷ yếu tại sân trường nhé! Nhớ mang đồng phục trắng." class="flex-1 px-4 py-3 rounded-2xl border border-sky-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm focus:outline-none focus:border-sky-500">
+                <button onclick="updateBroadcastBanner()" class="px-6 py-3 rounded-2xl bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shrink-0 shadow">
+                  Phát thông báo
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Pending Confessions Queue & Member Management -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Pending Confessions -->
+            <div class="glass-card rounded-3xl p-6 border border-white dark:border-slate-700 shadow-sm">
+              <h3 class="font-extrabold text-base text-slate-800 dark:text-white flex items-center justify-between mb-4">
+                <span><i class="fa-solid fa-clipboard-check text-sky-500 mr-2"></i>Duyệt Confession Chờ Đăng</span>
+                <span id="adminPendingCount" class="text-xs px-2.5 py-0.5 rounded-full bg-rose-100 text-rose-600 font-bold">2 bài chờ</span>
+              </h3>
+              <div id="pendingPostsContainer" class="space-y-3">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+
+            <!-- Member List & Role Assignment -->
+            <div class="glass-card rounded-3xl p-6 border border-white dark:border-slate-700 shadow-sm">
+              <h3 class="font-extrabold text-base text-slate-800 dark:text-white mb-4">
+                <i class="fa-solid fa-users-gear text-sky-500 mr-2"></i>Quản Lý Thành Viên & Cấp Quyền
+              </h3>
+              <div id="adminMembersList" class="space-y-3">
+                <!-- Rendered by JS -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ==========================================
+       MOBILE BOTTOM NAVIGATION BAR
+       ========================================== -->
+  <nav class="lg:hidden fixed bottom-0 inset-x-0 z-40 glass-card border-t border-sky-200/80 dark:border-slate-700 px-2 py-1.5 flex justify-around items-center shadow-lg">
+    <button onclick="switchTab('feed')" data-tab="feed" class="mobile-nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-sky-600 dark:text-sky-400 font-bold">
+      <i class="fa-solid fa-house-chimney text-lg"></i>
+      <span class="text-[10px] mt-0.5">Diễn đàn</span>
+    </button>
+    <button onclick="switchTab('memories')" data-tab="memories" class="mobile-nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-slate-500 dark:text-slate-400 font-medium">
+      <i class="fa-solid fa-camera-retro text-lg"></i>
+      <span class="text-[10px] mt-0.5">Kỷ niệm</span>
+    </button>
+    <!-- Center Plus CTA -->
+    <button onclick="openModal('createPostModal')" class="w-12 h-12 -mt-5 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 text-white shadow-lg shadow-sky-300 dark:shadow-none flex items-center justify-center text-xl active:scale-95 transition">
+      <i class="fa-solid fa-plus"></i>
+    </button>
+    <button onclick="switchTab('study')" data-tab="study" class="mobile-nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-slate-500 dark:text-slate-400 font-medium">
+      <i class="fa-solid fa-book-open-reader text-lg"></i>
+      <span class="text-[10px] mt-0.5">Học tập</span>
+    </button>
+    <button onclick="switchTab('admin')" data-tab="admin" class="mobile-nav-btn flex flex-col items-center py-1 px-3 rounded-2xl text-slate-500 dark:text-slate-400 font-medium relative">
+      <i class="fa-solid fa-shield-halved text-lg"></i>
+      <span class="text-[10px] mt-0.5">Admin</span>
+      <span id="mobileAdminBadge" class="w-2 h-2 rounded-full bg-rose-500 absolute top-1 right-3"></span>
+    </button>
+  </nav>
+
+  <!-- ==========================================
+       MODALS (CREATE POST, AUTH, PHOTO, LIGHTBOX)
+       ========================================== -->
+
+  <!-- 1. CREATE POST / CONFESSION MODAL -->
+  <div id="createPostModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-sky-100 dark:border-slate-700 relative">
+      <button onclick="closeModal('createPostModal')" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 hover:text-slate-800 flex items-center justify-center absolute top-4 right-4">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <h3 class="text-xl font-extrabold text-slate-800 dark:text-white flex items-center gap-2">
+        <i class="fa-solid fa-pen-to-square text-sky-500"></i> Tạo Bài Viết Mới
+      </h3>
+      <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Chia sẻ câu chuyện, hỏi bài hoặc gửi tâm sự ẩn danh</p>
+
+      <div class="space-y-4 mt-4">
+        <!-- Category & Anonymous Toggle -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+          <select id="postCategoryInput" class="px-3.5 py-2 rounded-xl border border-sky-200 dark:border-slate-600 bg-sky-50/70 dark:bg-slate-700 text-xs font-bold text-slate-700 dark:text-white focus:outline-none">
+            <option value="Dìm hàng & Giải trí">😂 Dìm hàng & Giải trí</option>
+            <option value="Confession">🎭 Confession Tâm Sự</option>
+            <option value="Học tập">📚 Hỏi đáp Học tập</option>
+            <option value="Thông báo">📢 Thông báo Lớp</option>
+          </select>
+
+          <label class="flex items-center gap-2 cursor-pointer select-none bg-slate-100 dark:bg-slate-700 px-3 py-2 rounded-xl text-xs font-bold">
+            <input id="postAnonCheckbox" type="checkbox" class="accent-sky-500 rounded">
+            <span>🕵️ Đăng ẩn danh (Giấu tên)</span>
+          </label>
+        </div>
+
+        <input id="postTitleInput" type="text" placeholder="Tiêu đề bài viết (VD: Góc tìm người đánh rơi máy tính Casio...)" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-transparent text-sm font-semibold focus:outline-none focus:border-sky-500">
+
+        <textarea id="postContentInput" rows="4" placeholder="Viết nội dung chia sẻ của bạn tại đây..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-transparent text-sm focus:outline-none focus:border-sky-500"></textarea>
+
+        <div>
+          <label class="block text-xs font-bold text-slate-500 mb-1">Đính kèm link ảnh (hoặc chọn nhanh ảnh mẫu):</label>
+          <input id="postImageInput" type="text" placeholder="Dán URL hình ảnh (Không bắt buộc)..." class="w-full px-4 py-2.5 rounded-xl border border-slate-200 dark:border-slate-600 bg-transparent text-xs focus:outline-none focus:border-sky-500">
+          <div class="flex gap-2 mt-2 overflow-x-auto no-scrollbar">
+            <button type="button" onclick="document.getElementById('postImageInput').value='https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80'" class="text-[11px] px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-slate-700 text-sky-600 dark:text-sky-300 font-semibold shrink-0">+ Ảnh nhóm bạn</button>
+            <button type="button" onclick="document.getElementById('postImageInput').value='https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80'" class="text-[11px] px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-slate-700 text-sky-600 dark:text-sky-300 font-semibold shrink-0">+ Ảnh ôn thi</button>
+            <button type="button" onclick="document.getElementById('postImageInput').value='https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80'" class="text-[11px] px-2.5 py-1 rounded-lg bg-sky-50 dark:bg-slate-700 text-sky-600 dark:text-sky-300 font-semibold shrink-0">+ Ảnh pháo hoa</button>
+          </div>
+        </div>
+
+        <button onclick="submitNewPost()" class="w-full py-3.5 rounded-full bg-gradient-to-r from-sky-500 to-sky-600 hover:from-sky-600 hover:to-sky-700 text-white font-bold text-sm shadow-lg shadow-sky-200 dark:shadow-none transition">
+          <i class="fa-solid fa-paper-plane mr-1.5"></i> Đăng lên diễn đàn ngay
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. WRITE STICKY NOTE (LƯU BÚT) MODAL -->
+  <div id="NoteModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeModal('NoteModal')" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 flex items-center justify-center absolute top-4 right-4">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="text-xl font-extrabold text-slate-800 dark:text-white">💌 Gửi Lưu Bút Thanh Xuân</h3>
+      <p class="text-xs text-slate-500 mt-1">Viết lời nhắn gửi đến người bạn thân hoặc cả tập thể lớp</p>
+
+      <div class="space-y-3 mt-4">
+        <input id="noteToInput" type="text" placeholder="Gửi tới ai? (VD: Gửi cả lớp 12A1, hoặc Gửi cậu bàn bên...)" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-transparent text-sm focus:outline-none focus:border-sky-500">
+        <textarea id="noteMessageInput" rows="4" placeholder="Lời nhắn nhủ chân thành của bạn..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-transparent text-sm focus:outline-none focus:border-sky-500"></textarea>
+        
+        <button onclick="submitStickyNote()" class="w-full py-3.5 rounded-full bg-amber-500 hover:bg-amber-600 text-white font-bold text-sm shadow-md">
+          Dán lên tường Lưu Bút
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. UPLOAD PHOTO MODAL -->
+  <div id="uploadPhotoModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeModal('uploadPhotoModal')" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 flex items-center justify-center absolute top-4 right-4">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="text-xl font-extrabold text-slate-800 dark:text-white">📸 Thêm Ảnh Vào Kho Kỷ Niệm</h3>
+      <div class="space-y-3 mt-4">
+        <input id="photoCaptionInput" type="text" placeholder="Chú thích bức ảnh..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-transparent text-sm focus:outline-none focus:border-sky-500">
+        <select id="photoAlbumInput" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm">
+          <option value="Kỷ yếu">🎓 Album Kỷ yếu</option>
+          <option value="Dã ngoại">🏕️ Album Dã ngoại</option>
+          <option value="Dìm hàng">🤪 Album Dìm hàng</option>
+        </select>
+        <input id="photoUrlInput" type="text" placeholder="Dán link ảnh (Hoặc để trống để lấy ảnh kỷ niệm mẫu)" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-transparent text-sm focus:outline-none focus:border-sky-500">
+        <button onclick="submitNewPhoto()" class="w-full py-3.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-md">
+          Lưu vào Album Lớp
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. ADD STUDY DOCUMENT MODAL -->
+  <div id="addDocModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeModal('addDocModal')" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 flex items-center justify-center absolute top-4 right-4">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="text-xl font-extrabold text-slate-800 dark:text-white">📚 Chia Sẻ Tài Liệu Học Tập</h3>
+      <div class="space-y-3 mt-4">
+        <input id="docTitleInput" type="text" placeholder="Tên tài liệu (VD: Tổng hợp công thức Vật Lý 12)" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-transparent text-sm">
+        <select id="docSubjectInput" class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-700 text-sm">
+          <option value="Toán học">📐 Toán học</option>
+          <option value="Ngữ văn">📖 Ngữ văn</option>
+          <option value="Tiếng Anh">🌍 Tiếng Anh</option>
+          <option value="KHTN / Tổ hợp">🧪 KHTN / Tổ hợp</option>
+        </select>
+        <button onclick="submitNewDoc()" class="w-full py-3.5 rounded-full bg-sky-500 hover:bg-sky-600 text-white font-bold text-sm shadow-md">
+          Đăng tài liệu
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. ACCOUNT & ROLE SWITCHER MODAL -->
+  <div id="authModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-md w-full p-6 shadow-2xl relative">
+      <button onclick="closeModal('authModal')" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 flex items-center justify-center absolute top-4 right-4">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="flex items-center gap-3 mb-4">
+        <div class="w-12 h-12 rounded-2xl bg-sky-500 text-white flex items-center justify-center text-xl shadow">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+        <div>
+          <h3 class="text-lg font-extrabold text-slate-800 dark:text-white">Tài Khoản & Phân Quyền</h3>
+          <p class="text-xs text-slate-500">Chuyển đổi nhanh tài khoản hoặc đăng ký thành viên mới</p>
+        </div>
+      </div>
+
+      <!-- Instant Role Switcher Box -->
+      <div class="p-4 rounded-2xl bg-sky-50 dark:bg-slate-700/60 border border-sky-200 dark:border-slate-600 mb-4">
+        <p class="text-xs font-extrabold text-sky-700 dark:text-sky-300 uppercase mb-2">⚡ Chuyển nhanh tài khoản (Trải nghiệm ngay):</p>
+        <div class="grid grid-cols-2 gap-2">
+          <button onclick="switchRole('admin'); closeModal('authModal')" class="p-2.5 rounded-xl bg-sky-500 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow">
+            <i class="fa-solid fa-crown text-amber-300"></i> Minh Anh (Admin)
+          </button>
+          <button onclick="switchRole('member'); closeModal('authModal')" class="p-2.5 rounded-xl bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-sky-200 dark:border-slate-600 text-xs font-bold flex items-center justify-center gap-1.5">
+            <i class="fa-solid fa-user text-sky-500"></i> Tuấn Kiệt (Member)
+          </button>
+        </div>
+      </div>
+
+      <!-- Custom Profile Update -->
+      <div class="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-700">
+        <p class="text-xs font-bold text-slate-500">Hoặc đổi tên hiển thị của bạn:</p>
+        <input id="customUserNameInput" type="text" placeholder="Nhập biệt danh hoặc Họ tên của bạn..." class="w-full px-4 py-3 rounded-2xl border border-slate-200 dark:border-slate-600 bg-transparent text-sm focus:outline-none focus:border-sky-500">
+        <button onclick="updateCustomProfile()" class="w-full py-3 rounded-full bg-slate-800 dark:bg-sky-600 text-white font-bold text-sm">
+          Lưu thông tin cá nhân
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. NOTIFICATIONS MODAL -->
+  <div id="notifModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm hidden items-center justify-center p-4 z-50">
+    <div class="bg-white dark:bg-slate-800 rounded-3xl max-w-sm w-full p-6 shadow-2xl relative">
+      <button onclick="closeModal('notifModal')" class="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-500 flex items-center justify-center absolute top-4 right-4">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <h3 class="text-lg font-extrabold text-slate-800 dark:text-white mb-3">🔔 Thông Báo Mới</h3>
+      <div class="space-y-3 text-xs">
+        <div class="p-3 rounded-2xl bg-sky-50 dark:bg-slate-700/60 flex gap-3 items-start">
+          <i class="fa-solid fa-heart text-rose-500 text-base mt-0.5"></i>
+          <div>
+            <p class="text-slate-700 dark:text-slate-200"><strong>Hoàng Nam</strong> và <strong>14 người khác</strong> đã thả tim bài viết của bạn.</p>
+            <span class="text-[10px] text-slate-400">Vừa xong</span>
+          </div>
+        </div>
+        <div class="p-3 rounded-2xl bg-sky-50 dark:bg-slate-700/60 flex gap-3 items-start">
+          <i class="fa-solid fa-file-arrow-up text-sky-500 text-base mt-0.5"></i>
+          <div>
+            <p class="text-slate-700 dark:text-slate-200"><strong>Lớp phó học tập</strong> vừa đăng bộ đề cương Toán học kỳ 2.</p>
+            <span class="text-[10px] text-slate-400">15 phút trước</span>
+          </div>
+        </div>
+        <div class="p-3 rounded-2xl bg-sky-50 dark:bg-slate-700/60 flex gap-3 items-start">
+          <i class="fa-solid fa-camera text-amber-500 text-base mt-0.5"></i>
+          <div>
+            <p class="text-slate-700 dark:text-slate-200">Album <strong>Dã ngoại Đà Lạt</strong> vừa có thêm 5 ảnh dìm hàng mới.</p>
+            <span class="text-[10px] text-slate-400">1 giờ trước</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. PHOTO LIGHTBOX MODAL -->
+  <div id="lightboxModal" onclick="closeModal('lightboxModal')" class="fixed inset-0 bg-slate-950/90 backdrop-blur-md hidden items-center justify-center p-4 z-50 cursor-zoom-out">
+    <div class="max-w-3xl w-full text-center space-y-3" onclick="event.stopPropagation()">
+      <img id="lightboxImg" src="" alt="Preview" class="max-h-[75vh] mx-auto rounded-3xl shadow-2xl border-2 border-white/20 object-contain">
+      <div class="flex items-center justify-between bg-white/10 backdrop-blur px-5 py-3 rounded-2xl text-white">
+        <p id="lightboxCaption" class="font-bold text-sm"></p>
+        <button onclick="closeModal('lightboxModal')" class="px-4 py-1.5 rounded-full bg-white/20 hover:bg-white/30 text-xs font-bold">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+       APPLICATION LOGIC & INITIAL DATA
+       ========================================== -->
+  <script>
+    // --- APPLICATION STATE ---
+    const state = {
+      currentUser: {
+        name: 'Nguyễn Minh Anh',
+        shortName: 'Minh Anh',
+        role: 'admin', // 'admin' or 'member'
+        avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+        points: 1450
+      },
+      currentCategory: 'all',
+      currentPhotoFilter: 'all',
+      searchQuery: '',
+      posts: [
+        {
+          id: 101,
+          author: 'Nguyễn Minh Anh',
+          role: 'admin',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+          time: '30 phút trước',
+          category: 'Thông báo',
+          pinned: true,
+          anonymous: false,
+          title: '📌 Kế hoạch chụp ảnh Kỷ Yếu & Đêm Gala lửa trại cuối năm!',
+          content: 'Các bạn ơi, vậy là chỉ còn vài tuần nữa thôi! Ban cán sự lớp đã chốt lịch chụp kỷ yếu vào Chủ Nhật tuần này. Buổi sáng chụp concept thanh xuân sân trường, buổi tối tổ chức Acoustic & chiếu video kỷ niệm. Ai có ảnh dìm hàng của thành viên trong lớp nhớ tải lên Kho Kỷ Niệm để làm video nhé!',
+          image: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=900&q=80',
+          likes: 42,
+          likedByMe: true,
+          comments: [
+            { author: 'Trần Tuấn Kiệt', text: 'Tuyệt vời luôn lớp trưởng ơi, mình giữ hơn 100 tấm ảnh dìm của tổ 3 đây 😂', time: '20 phút trước' },
+            { author: 'Lê Bảo Ngọc', text: 'Hóng đêm Gala quá, nhớ chuẩn bị nhiều khăn giấy nha mọi người!', time: '10 phút trước' }
+          ]
+        },
+        {
+          id: 102,
+          author: 'Người Giấu Tên #128',
+          role: 'member',
+          avatar: 'https://placehold.co/100x100/0ea5e9/ffffff?text=%3F',
+          time: '2 giờ trước',
+          category: 'Confession',
+          pinned: false,
+          anonymous: true,
+          title: '🎭 [CFS #128] Gửi cậu bạn hay ngồi cạnh cửa sổ dãy bàn số 2...',
+          content: 'Cảm ơn cậu vì những buổi chiều trời mưa luôn cho tớ mượn ô và giảng lại mấy bài Hình học không gian siêu khó. Sắp thi tốt nghiệp rồi, chúc cậu đỗ nguyện vọng 1 Bách Khoa nhé. Ngày chụp kỷ yếu nhất định tớ sẽ xin chụp chung với cậu 1 tấm!',
+          image: '',
+          likes: 68,
+          likedByMe: false,
+          comments: [
+            { author: 'Phạm Hoàng Nam', text: 'Dãy bàn số 2 cạnh cửa sổ chỉ có ông Kiệt hoặc ông Quân thôi, khai mau!! 👀', time: '1 giờ trước' }
+          ]
+        },
+        {
+          id: 103,
+          author: 'Trần Tuấn Kiệt',
+          role: 'member',
+          avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
+          time: '5 giờ trước',
+          category: 'Dìm hàng & Giải trí',
+          pinned: false,
+          anonymous: false,
+          title: '😂 Khi cả lớp bảo ra sân trường ôn bài nhưng thực tế là...',
+          content: 'Mở sách ra được đúng 5 phút xong ngồi chơi ma sói với ăn bánh tráng trộn hết cả buổi chiều. Nhưng mà vui thật sự!',
+          image: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=900&q=80',
+          likes: 35,
+          likedByMe: false,
+          comments: []
+        },
+        {
+          id: 104,
+          author: 'Lê Bảo Ngọc',
+          role: 'member',
+          avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80',
+          time: 'Hôm qua',
+          category: 'Học tập',
+          pinned: false,
+          anonymous: false,
+          title: '📚 Tổng hợp 50 cấu trúc viết lại câu Tiếng Anh chắc chắn có trong đề thi',
+          content: 'Mình vừa hệ thống lại toàn bộ ngữ pháp trọng tâm và mẹo khoanh trắc nghiệm phần Trọng âm - Phát âm. Đã cập nhật file đầy đủ bên tab Góc Học Tập, mọi người vào tải về ôn nhé!',
+          image: '',
+          likes: 51,
+          likedByMe: true,
+          comments: [
+            { author: 'Nguyễn Minh Anh', text: 'Đỉnh quá Bảo Ngọc ơi, cứu tinh môn Anh của cả lớp!', time: 'Hôm qua' }
+          ]
+        }
+      ],
+      pendingPosts: [
+        {
+          id: 901,
+          author: 'Confession Ẩn Danh #129',
+          category: 'Confession',
+          title: '🎭 Xin lỗi cô chủ nhiệm vì vụ giấu phấn hôm Cá tháng Tư!',
+          content: 'Tụi em xin lỗi cô vì hôm 1/4 đã lén đổi hộp phấn thành kẹo. Tụi em thương cô nhiều lắm ạ!'
+        },
+        {
+          id: 902,
+          author: 'Hoàng Gia Bảo',
+          category: 'Dìm hàng & Giải trí',
+          title: '😂 Tuyển tập ảnh ngủ gật trong giờ Văn của bàn cuối',
+          content: 'Đề nghị Admin duyệt bài để anh em chiêm ngưỡng dáng ngủ nghệ thuật của tổ 4.'
+        }
+      ],
+      photos: [
+        { id: 1, album: 'Kỷ yếu', caption: 'Nụ cười rực rỡ ngày chụp Kỷ yếu sân trường', author: 'Minh Anh', url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?auto=format&fit=crop&w=800&q=80' },
+        { id: 2, album: 'Dã ngoại', caption: 'Chuyến đi cắm trại Đà Lạt nhớ đời của 12A1', author: 'Tuấn Kiệt', url: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80' },
+        { id: 3, album: 'Dìm hàng', caption: 'Team bàn cuối mỗi khi tới giờ kiểm tra miệng', author: 'Hoàng Nam', url: 'https://images.unsplash.com/photo-1511632765486-a01980e01a18?auto=format&fit=crop&w=800&q=80' },
+        { id: 4, album: 'Kỷ yếu', caption: 'Khoảnh khắc tung mũ tốt nghiệp đầy tự hào', author: 'Bảo Ngọc', url: 'https://images.unsplash.com/photo-1523580494863-6f3031224c94?auto=format&fit=crop&w=800&q=80' },
+        { id: 5, album: 'Dã ngoại', caption: 'Đêm nhạc Acoustic bên ánh lửa trại', author: 'Gia Bảo', url: 'https://images.unsplash.com/photo-1517486808906-6ca8b3f04846?auto=format&fit=crop&w=800&q=80' },
+        { id: 6, album: 'Kỷ yếu', caption: 'Góc bàn học thân quen suốt 3 năm cấp 3', author: 'Minh Anh', url: 'https://images.unsplash.com/photo-1434030216411-0b793f4b4173?auto=format&fit=crop&w=800&q=80' }
+      ],
+      stickyNotes: [
+        { to: 'Gửi Tập thể 12A1', msg: 'Dù sau này mỗi đứa một trường đại học, nhớ mỗi năm họp lớp đầy đủ nhé! Mãi yêu đại gia đình mình ❤️', from: 'Lớp trưởng Minh Anh', color: 'bg-sky-100 border-sky-300 text-sky-900' },
+        { to: 'Gửi Tổ 2 Siêu Quậy', msg: 'Cảm ơn tụi mày vì những tràng cười đau bụng mỗi giờ ra chơi. Thi đậu hết nha!', from: 'Tuấn Kiệt', color: 'bg-amber-100 border-amber-300 text-amber-900' },
+        { to: 'Gửi Cô Chủ Nhiệm', msg: 'Cảm ơn cô đã luôn kiên nhẫn và bao dung với những trò nghịch ngợm của tụi em suốt 3 năm qua ạ!', from: 'Cả lớp 12A1', color: 'bg-rose-100 border-rose-300 text-rose-900' }
+      ],
+      studyDocs: [
+        { id: 1, title: 'Đề cương Trọng tâm Toán 12 & 100 câu Hàm số vận dụng cao', subject: 'Toán học', author: 'Minh Anh', downloads: 41 },
+        { id: 2, title: 'Sơ đồ tư duy Dẫn chứng Nghị luận Xã hội & Văn học', subject: 'Ngữ văn', author: 'Bảo Ngọc', downloads: 38 },
+        { id: 3, title: 'Tổng hợp Ngữ pháp & 500 Từ vựng Tiếng Anh sát đề thi', subject: 'Tiếng Anh', author: 'Tuấn Kiệt', downloads: 34 },
+        { id: 4, title: 'Bí kíp bấm máy tính Casio giải nhanh Vật Lý - Hóa Học', subject: 'KHTN / Tổ hợp', author: 'Hoàng Nam', downloads: 29 }
+      ],
+      members: [
+        { name: 'Nguyễn Minh Anh', role: 'Lớp Trưởng · Admin', points: 1450, badge: '👑 Ngôi Sao Toàn Diện', avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80' },
+        { name: 'Lê Bảo Ngọc', role: 'Lớp Phó Học Tập · Mod', points: 1280, badge: '📚 Học Bá Truyền Kỳ', avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80' },
+        { name: 'Trần Tuấn Kiệt', role: 'Thành viên tích cực', points: 1120, badge: '📸 Thánh Săn Ảnh Dìm', avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80' },
+        { name: 'Phạm Hoàng Nam', role: 'Thành viên', points: 940, badge: '⚡ Cây Hài Của Lớp', avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80' }
+      ]
+    };
+
+    // --- TOAST HELPER ---
+    function showToast(message, type = 'sky') {
+      const container = document.getElementById('toastContainer');
+      const toast = document.createElement('div');
+      const bgClass = type === 'rose' ? 'bg-rose-500' : (type === 'emerald' ? 'bg-emerald-500' : 'bg-sky-600');
+      toast.className = `${bgClass} text-white px-4 py-3 rounded-2xl shadow-xl text-xs font-bold flex items-center gap-2.5 pointer-events-auto transform transition duration-300`;
+      toast.innerHTML = `<i class="fa-solid fa-circle-check text-sm"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
+    // --- TAB NAVIGATION ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      const target = document.getElementById(`tab-${tabId}`);
+      if (target) target.classList.add('active');
+
+      // Update Desktop Sidebar Buttons
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.className = 'nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm bg-sky-500 text-white shadow-md shadow-sky-200 dark:shadow-none transition';
+        } else {
+          btn.className = 'nav-btn w-full flex items-center justify-between px-4 py-3 rounded-2xl font-bold text-sm text-slate-600 dark:text-slate-300 hover:bg-sky-50 dark:hover:bg-slate-800 transition';
+        }
+      });
+
+      // Update Mobile Bottom Nav Buttons
+      document.querySelectorAll('.mobile-nav-btn').forEach(btn => {
+        if (btn.dataset.tab === tabId) {
+          btn.classList.add('text-sky-600', 'dark:text-sky-400', 'font-bold');
+          btn.classList.remove('text-slate-500', 'dark:text-slate-400', 'font-medium');
+        } else {
+          btn.classList.remove('text-sky-600', 'dark:text-sky-400', 'font-bold');
+          btn.classList.add('text-slate-500', 'dark:text-slate-400', 'font-medium');
+        }
+      });
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- MODAL CONTROLS ---
+    function openModal(id) {
+      const m = document.getElementById(id);
+      if (m) {
+        m.classList.remove('hidden');
+        m.classList.add('flex');
+      }
+    }
+
+    function closeModal(id) {
+      const m = document.getElementById(id);
+      if (m) {
+        m.classList.add('hidden');
+        m.classList.remove('flex');
+      }
+    }
+
+    // --- DARK MODE ---
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+      const icon = document.getElementById('themeIcon');
+      if (document.documentElement.classList.contains('dark')) {
+        icon.className = 'fa-solid fa-sun text-amber-400';
+        showToast('Đã bật giao diện Ban đêm (Night Sky)');
+      } else {
+        icon.className = 'fa-solid fa-moon';
+        showToast('Đã bật giao diện Xanh Bầu Trời (Sky Light)');
+      }
+    }
+
+    // --- ROLE SWITCHING (ADMIN / MEMBER) ---
+    function switchRole(role) {
+      if (role === 'admin') {
+        state.currentUser = {
+          name: 'Nguyễn Minh Anh',
+          shortName: 'Minh Anh',
+          role: 'admin',
+          avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80',
+          points: 1450
+        };
+        showToast('Đã chuyển sang quyền Quản trị viên (Admin)!', 'emerald');
+      } else {
+        state.currentUser = {
+          name: 'Trần Tuấn Kiệt',
+          shortName: 'Tuấn Kiệt',
+          role: 'member',
+          avatar: 'https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?auto=format&fit=crop&w=120&q=80',
+          points: 1120
+        };
+        showToast('Đã chuyển sang tài khoản Thành viên thường!');
+      }
+      updateUserUI();
+      renderPosts();
+      renderAdminPanel();
+    }
+
+    function updateCustomProfile() {
+      const val = document.getElementById('customUserNameInput').value.trim();
+      if (!val) return;
+      state.currentUser.name = val;
+      state.currentUser.shortName = val.split(' ').slice(-2).join(' ');
+      updateUserUI();
+      closeModal('authModal');
+      showToast(`Xin chào ${val}! Đã cập nhật hồ sơ.`);
+    }
+
+    function updateUserUI() {
+      const u = state.currentUser;
+      document.getElementById('headerUserAvatar').src = u.avatar;
+      document.getElementById('sidebarAvatar').src = u.avatar;
+      document.getElementById('composerAvatar').src = u.avatar;
+      document.getElementById('headerUserName').textContent = u.shortName;
+      document.getElementById('sidebarName').textContent = u.name;
+      document.getElementById('userPoints').textContent = `${u.points} XP`;
+
+      const isAdmin = u.role === 'admin';
+      document.getElementById('headerUserRole').textContent = isAdmin ? 'Admin · Lớp trưởng' : 'Thành viên 12A1';
+      document.getElementById('sidebarRoleBadge').innerHTML = isAdmin
+        ? '<i class="fa-solid fa-crown text-amber-500"></i> Lớp Trưởng (Admin)'
+        : '<i class="fa-solid fa-user-check text-sky-500"></i> Thành viên lớp';
+
+      // Role Switch Buttons Highlight
+      const btnAdmin = document.getElementById('roleBtnAdmin');
+      const btnMem = document.getElementById('roleBtnMember');
+      if (isAdmin) {
+        btnAdmin.className = 'py-1.5 px-2 rounded-xl text-xs font-bold bg-sky-500 text-white shadow-sm transition';
+        btnMem.className = 'py-1.5 px-2 rounded-xl text-xs font-bold bg-sky-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition';
+      } else {
+        btnMem.className = 'py-1.5 px-2 rounded-xl text-xs font-bold bg-sky-500 text-white shadow-sm transition';
+        btnAdmin.className = 'py-1.5 px-2 rounded-xl text-xs font-bold bg-sky-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 transition';
+      }
+
+      // Admin Lock Screen
+      document.getElementById('adminLockNotice').classList.toggle('hidden', isAdmin);
+      document.getElementById('adminDashboardContent').classList.toggle('hidden', !isAdmin);
+    }
+
+    // --- RENDER FORUM POSTS ---
+    function filterPosts(category) {
+      state.currentCategory = category;
+      document.querySelectorAll('.cat-pill').forEach(btn => {
+        if (btn.dataset.cat === category) {
+          btn.className = 'cat-pill shrink-0 px-4 py-2 rounded-full text-xs font-bold bg-sky-500 text-white shadow-sm transition';
+        } else {
+          btn.className = 'cat-pill shrink-0 px-4 py-2 rounded-full text-xs font-bold bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-sky-200 dark:border-slate-700 hover:border-sky-400 transition';
+        }
+      });
+      renderPosts();
+    }
+
+    function handleSearch(query) {
+      state.searchQuery = query.toLowerCase().trim();
+      renderPosts();
+    }
+
+    function renderPosts() {
+      const container = document.getElementById('postsFeedContainer');
+      const isAdmin = state.currentUser.role === 'admin';
+
+      // Sort pinned first
+      const sorted = [...state.posts].sort((a, b) => (b.pinned === true) - (a.pinned === true));
+
+      const filtered = sorted.filter(post => {
+        const matchCat = state.currentCategory === 'all' || post.category === state.currentCategory;
+        const matchSearch = !state.searchQuery ||
+          post.title.toLowerCase().includes(state.searchQuery) ||
+          post.content.toLowerCase().includes(state.searchQuery) ||
+          post.author.toLowerCase().includes(state.searchQuery);
+        return matchCat && matchSearch;
+      });
+
+      document.getElementById('statTotalPosts').textContent = state.posts.length;
+      document.getElementById('navFeedCount').textContent = state.posts.length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="glass-card rounded-3xl p-10 text-center border border-white dark:border-slate-700">
+            <i class="fa-regular fa-folder-open text-4xl text-sky-400 mb-2"></i>
+            <p class="font-bold text-slate-700 dark:text-slate-200">Chưa có bài viết nào trong mục này</p>
+            <p class="text-xs text-slate-500 mt-1">Hãy là người đầu tiên đăng bài mở màn nhé!</p>
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(post => `
+        <article class="glass-card rounded-3xl p-5 sm:p-6 border ${post.pinned ? 'border-sky-300 dark:border-sky-600 ring-1 ring-sky-200 dark:ring-sky-800' : 'border-white dark:border-slate-700'} shadow-sm transition hover:shadow-md">
+          <!-- Post Header -->
+          <div class="flex items-start justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <img src="${post.avatar}" alt="${post.author}" class="w-11 h-11 rounded-2xl object-cover ring-2 ${post.anonymous ? 'ring-purple-400' : 'ring-sky-200'}">
+              <div>
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <h4 class="font-extrabold text-sm text-slate-800 dark:text-white">${post.author}</h4>
+                  ${post.role === 'admin' && !post.anonymous ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-sky-100 dark:bg-sky-900 text-sky-700 dark:text-sky-300"><i class="fa-solid fa-crown text-amber-500 mr-0.5"></i>Admin</span>` : ''}
+                  ${post.anonymous ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300">Ẩn danh</span>` : ''}
+                </div>
+                <div class="flex items-center gap-2 text-[11px] text-slate-400 mt-0.5">
+                  <span>${post.time}</span>
+                  <span>•</span>
+                  <span class="font-semibold text-sky-600 dark:text-sky-400">${post.category}</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Pinned Badge & Admin Controls -->
+            <div class="flex items-center gap-1.5">
+              ${post.pinned ? `<span class="px-2.5 py-1 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-700 dark:text-amber-300 text-[11px] font-bold flex items-center gap-1"><i class="fa-solid fa-thumbtack"></i> Đã ghim</span>` : ''}
+              ${isAdmin ? `
+                <button onclick="togglePinPost(${post.id})" title="Ghim hoặc bỏ ghim" class="w-8 h-8 rounded-xl bg-sky-50 dark:bg-slate-800 hover:bg-sky-100 text-slate-500 hover:text-sky-600 text-xs flex items-center justify-center transition">
+                  <i class="fa-solid fa-thumbtack"></i>
+                </button>
+                <button onclick="deletePost(${post.id})" title="Xóa bài viết (Admin)" class="w-8 h-8 rounded-xl bg-rose-50 dark:bg-slate-800 hover:bg-rose-100 text-rose-500 text-xs flex items-center justify-center transition">
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- Post Content -->
+          <div class="mt-3.5">
+            <h3 class="font-extrabold text-base sm:text-lg text-slate-900 dark:text-white leading-snug">${post.title}</h3>
+            <p class="text-slate-600 dark:text-slate-300 text-sm leading-relaxed mt-1.5 whitespace-pre-line">${post.content}</p>
+          </div>
+
+          <!-- Post Optional Image -->
+          ${post.image ? `
+            <div onclick="openLightbox('${post.image}', '${post.title.replace(/'/g, "\\'")}')" class="mt-4 rounded-2xl overflow-hidden max-h-80 border border-sky-100 dark:border-slate-700 cursor-zoom-in">
+              <img src="${post.image}" alt="Post image" class="w-full h-full object-cover hover:scale-[1.02] transition duration-300" onerror="this.style.display='none'">
+            </div>
+          ` : ''}
+
+          <!-- Post Actions Footer -->
+          <div class="mt-4 pt-3 border-t border-sky-100/80 dark:border-slate-700/80 flex items-center justify-between text-xs font-bold text-slate-500 dark:text-slate-400">
+            <div class="flex items-center gap-4">
+              <button onclick="toggleLike(${post.id})" id="likeBtn-${post.id}" class="flex items-center gap-1.5 py-1.5 px-3 rounded-full ${post.likedByMe ? 'bg-rose-50 dark:bg-rose-950/60 text-rose-500' : 'hover:bg-sky-50 dark:hover:bg-slate-800'} transition">
+                <i class="${post.likedByMe ? 'fa-solid' : 'fa-regular'} fa-heart text-sm"></i>
+                <span>${post.likes} Tim</span>
+              </button>
+              <button onclick="document.getElementById('commentInput-${post.id}').focus()" class="flex items-center gap-1.5 py-1.5 px-3 rounded-full hover:bg-sky-50 dark:hover:bg-slate-800 transition">
+                <i class="fa-regular fa-comment-dots text-sm text-sky-500"></i>
+                <span>${post.comments.length} Bình luận</span>
+              </button>
+            </div>
+            <button onclick="copyShareLink(${post.id})" class="flex items-center gap-1.5 py-1.5 px-3 rounded-full hover:bg-sky-50 dark:hover:bg-slate-800 transition">
+              <i class="fa-solid fa-share-nodes text-sky-500"></i> Chia sẻ
+            </button>
+          </div>
+
+          <!-- Comments Section -->
+          <div class="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2.5">
+            ${post.comments.map(c => `
+              <div class="bg-sky-50/70 dark:bg-slate-800/80 px-3.5 py-2.5 rounded-2xl text-xs">
+                <div class="flex items-center justify-between">
+                  <span class="font-extrabold text-slate-800 dark:text-white">${c.author}</span>
+                  <span class="text-[10px] text-slate-400">${c.time}</span>
+                </div>
+                <p class="text-slate-600 dark:text-slate-300 mt-0.5">${c.text}</p>
+              </div>
+            `).join('')}
+
+            <!-- Add Comment Input -->
+            <div class="flex items-center gap-2 pt-1">
+              <input id="commentInput-${post.id}" onkeydown="if(event.key==='Enter') addComment(${post.id})" type="text" placeholder="Viết bình luận của bạn..." class="flex-1 px-3.5 py-2 rounded-full bg-white dark:bg-slate-800 border border-sky-200 dark:border-slate-700 text-xs focus:outline-none focus:border-sky-500">
+              <button onclick="addComment(${post.id})" class="w-8 h-8 rounded-full bg-sky-500 hover:bg-sky-600 text-white flex items-center justify-center text-xs shrink-0 shadow">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+        </article>
+      `).join('');
+    }
+
+    // --- POST INTERACTIONS ---
+    function toggleLike(postId) {
+      const post = state.posts.find(p => p.id === postId);
+      if (!post) return;
+      post.likedByMe = !post.likedByMe;
+      post.likes += post.likedByMe ? 1 : -1;
+      renderPosts();
+      const btn = document.getElementById(`likeBtn-${postId}`);
+      if (btn) btn.classList.add('animate-pop');
+    }
+
+    function addComment(postId) {
+      const input = document.getElementById(`commentInput-${postId}`);
+      const text = input.value.trim();
+      if (!text) return;
+      const post = state.posts.find(p => p.id === postId);
+      if (!post) return;
+      post.comments.push({
+        author: state.currentUser.name,
+        text: text,
+        time: 'Vừa xong'
+      });
+      state.currentUser.points += 10;
+      updateUserUI();
+      renderPosts();
+      showToast('Đã gửi bình luận (+10 XP)');
+    }
+
+    function submitNewPost() {
+      const title = document.getElementById('postTitleInput').value.trim();
+      const content = document.getElementById('postContentInput').value.trim();
+      const category = document.getElementById('postCategoryInput').value;
+      const isAnon = document.getElementById('postAnonCheckbox').checked;
+      const image = document.getElementById('postImageInput').value.trim();
+
+      if (!title || !content) {
+        showToast('Vui lòng nhập đầy đủ tiêu đề và nội dung!', 'rose');
+        return;
+      }
+
+      const newPost = {
+        id: Date.now(),
+        author: isAnon ? `Người Giấu Tên #${Math.floor(130 + Math.random() * 90)}` : state.currentUser.name,
+        role: state.currentUser.role,
+        avatar: isAnon ? 'https://placehold.co/100x100/0ea5e9/ffffff?text=%3F' : state.currentUser.avatar,
+        time: 'Vừa xong',
+        category,
+        pinned: false,
+        anonymous: isAnon,
+        title,
+        content,
+        image,
+        likes: 1,
+        likedByMe: true,
+        comments: []
+      };
+
+      state.posts.unshift(newPost);
+      state.currentUser.points += 30;
+      updateUserUI();
+      renderPosts();
+
+      // Clear inputs
+      document.getElementById('postTitleInput').value = '';
+      document.getElementById('postContentInput').value = '';
+      document.getElementById('postImageInput').value = '';
+      document.getElementById('postAnonCheckbox').checked = false;
+      closeModal('createPostModal');
+      showToast('Đăng bài thành công lên diễn đàn (+30 XP)!', 'emerald');
+    }
+
+    function togglePinPost(postId) {
+      const post = state.posts.find(p => p.id === postId);
+      if (!post) return;
+      post.pinned = !post.pinned;
+      renderPosts();
+      showToast(post.pinned ? 'Đã ghim bài viết lên đầu trang!' : 'Đã bỏ ghim bài viết');
+    }
+
+    function deletePost(postId) {
+      state.posts = state.posts.filter(p => p.id !== postId);
+      renderPosts();
+      showToast('Đã xóa bài viết khỏi diễn đàn', 'rose');
+    }
+
+    function copyShareLink() {
+      showToast('Đã sao chép liên kết bài viết vào bộ nhớ tạm!');
+    }
+
+    // --- RENDER PHOTOS & STICKY NOTES ---
+    function filterPhotos(album) {
+      state.currentPhotoFilter = album;
+      renderMemories();
+    }
+
+    function renderMemories() {
+      const grid = document.getElementById('photoGalleryGrid');
+      const filtered = state.currentPhotoFilter === 'all'
+        ? state.photos
+        : state.photos.filter(p => p.album === state.currentPhotoFilter);
+
+      document.getElementById('statTotalPhotos').textContent = state.photos.length;
+
+      grid.innerHTML = filtered.map(p => `
+        <div onclick="openLightbox('${p.url}', '${p.caption.replace(/'/g, "\\'")}')" class="glass-card rounded-3xl overflow-hidden border border-white dark:border-slate-700 shadow-sm group cursor-pointer">
+          <div class="relative h-52 overflow-hidden">
+            <img src="${p.url}" alt="${p.caption}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+            <span class="absolute top-3 left-3 px-3 py-1 rounded-full bg-slate-900/70 backdrop-blur text-white text-[11px] font-bold">
+              ${p.album}
+            </span>
+          </div>
+          <div class="p-4">
+            <p class="font-bold text-sm text-slate-800 dark:text-white line-clamp-1">${p.caption}</p>
+            <p class="text-[11px] text-slate-400 mt-1"><i class="fa-solid fa-camera mr-1 text-sky-500"></i>Đăng bởi ${p.author}</p>
+          </div>
+        </div>
+      `).join('');
+
+      // Sticky Notes Wall
+      const notesGrid = document.getElementById('stickyNotesGrid');
+      notesGrid.innerHTML = state.stickyNotes.map(n => `
+        <div class="${n.color} p-5 rounded-3xl border-2 shadow-sm flex flex-col justify-between hover:-rotate-1 transition">
+          <div>
+            <span class="text-xs font-extrabold uppercase tracking-wider opacity-75">${n.to}</span>
+            <p class="text-sm font-medium mt-2 leading-relaxed">"${n.msg}"</p>
+          </div>
+          <p class="text-xs font-extrabold mt-4 text-right">— ${n.from}</p>
+        </div>
+      `).join('');
+    }
+
+    function openLightbox(url, caption) {
+      document.getElementById('lightboxImg').src = url;
+      document.getElementById('lightboxCaption').textContent = caption;
+      openModal('lightboxModal');
+    }
+
+    function submitNewPhoto() {
+      const caption = document.getElementById('photoCaptionInput').value.trim() || 'Khoảnh khắc đáng nhớ của 12A1';
+      const album = document.getElementById('photoAlbumInput').value;
+      const url = document.getElementById('photoUrlInput').value.trim() || 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=800&q=80';
+
+      state.photos.unshift({
+        id: Date.now(),
+        album,
+        caption,
+        author: state.currentUser.shortName,
+        url
+      });
+
+      document.getElementById('photoCaptionInput').value = '';
+      document.getElementById('photoUrlInput').value = '';
+      closeModal('uploadPhotoModal');
+      renderMemories();
+      showToast('Đã thêm ảnh mới vào Kho Kỷ Niệm!', 'emerald');
+    }
+
+    function submitStickyNote() {
+      const to = document.getElementById('noteToInput').value.trim() || 'Gửi Tập thể lớp';
+      const msg = document.getElementById('noteMessageInput').value.trim();
+      if (!msg) {
+        showToast('Hãy viết lời nhắn trước khi dán nhé!', 'rose');
+        return;
+      }
+      const colors = [
+        'bg-sky-100 border-sky-300 text-sky-900',
+        'bg-amber-100 border-amber-300 text-amber-900',
+        'bg-rose-100 border-rose-300 text-rose-900',
+        'bg-emerald-100 border-emerald-300 text-emerald-900'
+      ];
+      state.stickyNotes.unshift({
+        to,
+        msg,
+        from: state.currentUser.shortName,
+        color: colors[Math.floor(Math.random() * colors.length)]
+      });
+      document.getElementById('noteToInput').value = '';
+      document.getElementById('noteMessageInput').value = '';
+      closeModal('NoteModal');
+      renderMemories();
+      switchTab('memories');
+      showToast('Đã dán Lưu Bút Thanh Xuân thành công!', 'emerald');
+    }
+
+    // --- STUDY HUB & POMODORO TIMER ---
+    let pomoSeconds = 25 * 60;
+    let pomoInterval = null;
+
+    function updatePomoDisplay() {
+      const mins = String(Math.floor(pomoSeconds / 60)).padStart(2, '0');
+      const secs = String(pomoSeconds % 60).padStart(2, '0');
+      document.getElementById('pomoTimeDisplay').textContent = `${mins}:${secs}`;
+    }
+
+    function togglePomodoro() {
+      const btn = document.getElementById('pomoStartBtn');
+      if (pomoInterval) {
+        clearInterval(pomoInterval);
+        pomoInterval = null;
+        btn.innerHTML = '<i class="fa-solid fa-play mr-1"></i> Tiếp tục học';
+      } else {
+        btn.innerHTML = '<i class="fa-solid fa-pause mr-1"></i> Tạm dừng';
+        pomoInterval = setInterval(() => {
+          if (pomoSeconds > 0) {
+            pomoSeconds--;
+            updatePomoDisplay();
+          } else {
+            clearInterval(pomoInterval);
+            pomoInterval = null;
+            btn.innerHTML = '<i class="fa-solid fa-play mr-1"></i> Bắt đầu lại';
+            showToast('🎉 Hoàn thành phiên học Pomodoro! Nghỉ giải lao nhé (+25 XP)', 'emerald');
+          }
+        }, 1000);
+      }
+    }
+
+    function setPomoMode(minutes, label) {
+      if (pomoInterval) {
+        clearInterval(pomoInterval);
+        pomoInterval = null;
+      }
+      pomoSeconds = minutes * 60;
+      document.getElementById('pomoStatusText').textContent = label;
+      document.getElementById('pomoStartBtn').innerHTML = '<i class="fa-solid fa-play mr-1"></i> Bắt đầu học';
+      updatePomoDisplay();
+    }
+
+    function resetPomodoro() {
+      setPomoMode(25, '25 phút tập trung cao độ · 5 phút nghỉ ngơi');
+    }
+
+    function renderStudyDocs() {
+      const list = document.getElementById('studyDocsList');
+      document.getElementById('statTotalDocs').textContent = state.studyDocs.length;
+      list.innerHTML = state.studyDocs.map(doc => `
+        <div class="p-4 rounded-2xl bg-sky-50/80 dark:bg-slate-800 border border-sky-100 dark:border-slate-700 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-sky-500 text-white flex items-center justify-center shrink-0">
+              <i class="fa-solid fa-file-pdf"></i>
+            </div>
+            <div>
+              <h4 class="font-bold text-sm text-slate-800 dark:text-white">${doc.title}</h4>
+              <p class="text-[11px] text-slate-500 dark:text-slate-400">${doc.subject} • Đăng bởi ${doc.author} • ${doc.downloads} lượt tải</p>
+            </div>
+          </div>
+          <button onclick="downloadDoc(${doc.id})" class="px-3.5 py-2 rounded-xl bg-white dark:bg-slate-700 hover:bg-sky-500 hover:text-white text-sky-600 dark:text-sky-300 border border-sky-200 dark:border-slate-600 text-xs font-bold shrink-0 transition">
+            <i class="fa-solid fa-download mr-1"></i> Tải về
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function downloadDoc(id) {
+      const doc = state.studyDocs.find(d => d.id === id);
+      if (doc) {
+        doc.downloads++;
+        renderStudyDocs();
+        showToast(`Đang tải tài liệu: "${doc.title}"`);
+      }
+    }
+
+    function submitNewDoc() {
+      const title = document.getElementById('docTitleInput').value.trim();
+      const subject = document.getElementById('docSubjectInput').value;
+      if (!title) return;
+      state.studyDocs.unshift({
+        id: Date.now(),
+        title,
+        subject,
+        author: state.currentUser.shortName,
+        downloads: 1
+      });
+      document.getElementById('docTitleInput').value = '';
+      closeModal('addDocModal');
+      renderStudyDocs();
+      showToast('Đã chia sẻ tài liệu mới cho lớp (+40 XP)!', 'emerald');
+    }
+
+    // --- LEADERBOARD & ADMIN PANEL ---
+    function renderLeaderboard() {
+      const container = document.getElementById('leaderboardContainer');
+      container.innerHTML = state.members.map((m, idx) => `
+        <div class="p-4 rounded-2xl bg-sky-50/70 dark:bg-slate-800 border border-sky-100 dark:border-slate-700 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-3">
+            <span class="w-8 h-8 rounded-full ${idx === 0 ? 'bg-amber-400 text-white' : (idx === 1 ? 'bg-slate-300 text-slate-800' : 'bg-amber-700/20 text-amber-800 dark:text-amber-300')} font-extrabold text-sm flex items-center justify-center">
+              #${idx + 1}
+            </span>
+            <img src="${m.avatar}" class="w-11 h-11 rounded-2xl object-cover" alt="${m.name}">
+            <div>
+              <h4 class="font-extrabold text-sm text-slate-800 dark:text-white">${m.name}</h4>
+              <span class="text-[11px] font-semibold text-sky-600 dark:text-sky-400">${m.badge}</span>
+            </div>
+          </div>
+          <div class="text-right">
+            <p class="font-extrabold text-sm text-sky-600 dark:text-sky-400">${m.points} XP</p>
+            <p class="text-[10px] text-slate-400">${m.role}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function renderAdminPanel() {
+      const pendingContainer = document.getElementById('pendingPostsContainer');
+      const count = state.pendingPosts.length;
+      document.getElementById('adminPendingCount').textContent = `${count} bài chờ`;
+      document.getElementById('pendingCountBadge').textContent = count;
+      document.getElementById('mobileAdminBadge').style.display = count > 0 ? 'block' : 'none';
+
+      if (count === 0) {
+        pendingContainer.innerHTML = `<p class="text-xs text-slate-400 py-4 text-center">🎉 Đã duyệt sạch toàn bộ bài chờ!</p>`;
+      } else {
+        pendingContainer.innerHTML = state.pendingPosts.map(p => `
+          <div class="p-4 rounded-2xl bg-sky-50/80 dark:bg-slate-800 border border-sky-100 dark:border-slate-700 space-y-2">
+            <div class="flex justify-between items-center text-[11px] font-bold text-sky-600">
+              <span>${p.author}</span>
+              <span>${p.category}</span>
+            </div>
+            <h4 class="font-extrabold text-sm text-slate-800 dark:text-white">${p.title}</h4>
+            <p class="text-xs text-slate-600 dark:text-slate-300">${p.content}</p>
+            <div class="flex gap-2 pt-2">
+              <button onclick="approvePendingPost(${p.id})" class="flex-1 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold">
+                <i class="fa-solid fa-check mr-1"></i> Duyệt đăng
+              </button>
+              <button onclick="rejectPendingPost(${p.id})" class="px-4 py-2 rounded-xl bg-rose-100 hover:bg-rose-200 text-rose-600 text-xs font-bold">
+                Từ chối
+              </button>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Members Admin List
+      const memList = document.getElementById('adminMembersList');
+      memList.innerHTML = state.members.map((m, i) => `
+        <div class="p-3 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700 flex items-center justify-between">
+          <div class="flex items-center gap-2.5">
+            <img src="${m.avatar}" class="w-9 h-9 rounded-xl object-cover">
+            <div>
+              <p class="font-bold text-xs text-slate-800 dark:text-white">${m.name}</p>
+              <p class="text-[11px] text-slate-500">${m.role}</p>
+            </div>
+          </div>
+          <button onclick="promoteMember(${i})" class="px-3 py-1.5 rounded-xl bg-sky-100 dark:bg-slate-700 text-sky-700 dark:text-sky-300 text-[11px] font-bold hover:bg-sky-500 hover:text-white transition">
+            Đổi quyền
+          </button>
+        </div>
+      `).join('');
+    }
+
+    function approvePendingPost(id) {
+      const idx = state.pendingPosts.findIndex(p => p.id === id);
+      if (idx === -1) return;
+      const item = state.pendingPosts.splice(idx, 1)[0];
+      state.posts.unshift({
+        id: Date.now(),
+        author: item.author,
+        role: 'member',
+        avatar: 'https://placehold.co/100x100/0ea5e9/ffffff?text=CFS',
+        time: 'Vừa duyệt xong',
+        category: item.category,
+        pinned: false,
+        anonymous: true,
+        title: item.title,
+        content: item.content,
+        image: '',
+        likes: 1,
+        likedByMe: false,
+        comments: []
+      });
+      renderAdminPanel();
+      renderPosts();
+      showToast('Đã duyệt bài lên trang chủ diễn đàn!', 'emerald');
+    }
+
+    function rejectPendingPost(id) {
+      state.pendingPosts = state.pendingPosts.filter(p => p.id !== id);
+      renderAdminPanel();
+      showToast('Đã từ chối bài viết chờ duyệt', 'rose');
+    }
+
+    function promoteMember(index) {
+      const m = state.members[index];
+      m.role = m.role.includes('Mod') || m.role.includes('Admin') ? 'Thành viên lớp' : 'Quản trị viên · Mod';
+      renderAdminPanel();
+      renderLeaderboard();
+      showToast(`Đã cập nhật quyền hạn cho ${m.name}!`);
+    }
+
+    function updateBroadcastBanner() {
+      const text = document.getElementById('adminBroadcastInput').value.trim();
+      if (!text) return;
+      document.getElementById('broadcastText').textContent = text;
+      showToast('Đã phát thông báo mới trên toàn diễn đàn!', 'emerald');
+    }
+
+    // --- INITIALIZE ON LOAD ---
+    window.onload = function () {
+      updateUserUI();
+      renderPosts();
+      renderMemories();
+      renderStudyDocs();
+      renderLeaderboard();
+      renderAdminPanel();
+    };
+  </script>
+</body>
+</html>
